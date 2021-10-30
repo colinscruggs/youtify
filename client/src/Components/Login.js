@@ -1,5 +1,6 @@
 import React from 'react'
 
+import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -14,7 +15,12 @@ const AUTH_URL = `https://accounts.spotify.com/authorize?client_id=${client_id}&
 
 export default function Login() {
   return (
-    <div>
+    <Grid 
+    container
+    direction="row"
+    justifyContent="center"
+    alignItems="center"
+    >
       <Card sx={{ maxWidth: 400 }}>
         <CardContent>
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
@@ -25,6 +31,6 @@ export default function Login() {
           <Button size="medium" color="success" href={AUTH_URL}>LOGIN</Button>
         </CardActions>
       </Card>
-    </div>
+    </Grid>
   );
 }

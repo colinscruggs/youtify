@@ -1,21 +1,36 @@
-import Login from './Login';
-import Dashboard from './Dashboard';
-import Grid from '@mui/material/Grid';
+import Login from './Components/Login';
+import Dashboard from './Components/Dashboard';
+// import {
+//   BrowserRouter as Router,
+//   Switch,
+//   Route
+// } from "react-router-dom";
 
 const code = new URLSearchParams(window.location.search).get('code');
 
 function App() {
   return (
-    <Grid 
-      container
-      direction="row"
-      justifyContent="center"
-      alignItems="center"
-    >
-      {code ? 
+    <>
+      {
+        code ? 
         <Dashboard code={code} /> : <Login />
       }
-    </Grid>
+    </>
+    // TODO: figure out routing situation
+    // <Router>
+    //   <Switch>
+    //     <Route exact path="/">
+    //       <Login />
+    //     </Route>
+    //     <Route path="/home">
+    //       {
+    //         code ?
+    //         <Dashboard code={code} />
+    //         : <p>Please login</p>
+    //       }
+    //     </Route>
+    //   </Switch>
+    // </Router>
   );
 }
 

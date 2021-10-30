@@ -29,7 +29,7 @@ app.post('/login', (req, res) => {
     console.log(err);
     res.sendStatus(400);
   })
-})
+});
 
 app.post("/refresh", (req, res) => {
   const refreshToken = req.body.refreshToken
@@ -38,7 +38,7 @@ app.post("/refresh", (req, res) => {
     clientId: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
     refreshToken,
-  })
+  });
 
   spotifyApi
     .refreshAccessToken()
@@ -52,12 +52,6 @@ app.post("/refresh", (req, res) => {
       console.log(err)
       res.sendStatus(400)
     })
-})
-
-app.get("/lyrics", async (req, res) => {
-  const lyrics =
-    (await lyricsFinder(req.query.artist, req.query.track)) || "No Lyrics Found"
-  res.json({ lyrics })
-})
+});
 
 app.listen(3001);
