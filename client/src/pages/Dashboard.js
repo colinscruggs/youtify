@@ -9,6 +9,8 @@ import AppBar from '@mui/material/AppBar';
 import Paper from '@mui/material/Paper';
 import Avatar from '@mui/material/Avatar';
 import LinearProgress from '@mui/material/LinearProgress';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import Pagination from '@mui/material/Pagination';
@@ -31,6 +33,7 @@ export default function Dashboard({ code }) {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedTimeRange, setSelectedTimeRange] = useState('short_term');
+  const [currentArtist, setCurrentArtist] = useState(null);
   const accessToken = useAuth(code);
 
   const NUM_ITEMS = 20;
@@ -73,8 +76,7 @@ export default function Dashboard({ code }) {
     setLoading(false);
   }, [currentPage])
 
-  console.log(userProfile);
-  console.log(topArtists);
+  console.log(currentArtist);
 
   return (
     <>
@@ -109,9 +111,11 @@ export default function Dashboard({ code }) {
       justifyContent="space-around"
       alignItems="center"
       style={{ minHeight: 'calc(100vh - 68px)', maxWidth: '100%' }}
+      rowSpacing={1}
+      columnSpacing={{ xs: 1, sm: 2, md: 3 }}
     >
       {/* TOP ARTISTS/SONGS */}
-      <Grid item xs={11} sm={11} md={6}>
+      <Grid item xs={11} sm={11} md={currentArtist ? 5 : 6}>
         <Paper
           sx={{
             bgcolor: 'background.paper',
@@ -137,25 +141,29 @@ export default function Dashboard({ code }) {
             columnSpacing={4}
           >
             { (loading ? Array.from(new Array(NUM_ITEMS)) : topArtists?.items ?? []).map(artist => {
-              console.log(artist);
               return  artist ? (
-                <Grid item xs={6} sm={3} md={4} lg={3} xl={2}>
-                  <div className='artist-container'>
-                    <Avatar alt={artist.name} src={artist?.images[0]?.url} variant="rounded" />
+                <Grid item xs={6} sm={3} md={currentArtist ? 4 : 3} lg={currentArtist ? 4 : 3} xl={currentArtist ? 3 : 2}>
+                  <div className='artist-container'
+                    onClick={() => {
+                      setCurrentArtist(artist);
+                    }}
+                  >
+                    <Avatar alt={artist.name} src={artist?.images[1]?.url} variant="rounded" sx={{ width: 56, height: 56 }}/>
                     <Typography variant="overlineText" sx={{
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          maxWidth: '100%'
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      maxWidth: '100%'
                     }}>
                       {artist?.name}
                     </Typography>
                   </div>
                 </Grid>
               ) : (
-              <Grid item xs={4} sm={3} md={4} lg={3} xl={2}>
-                <div>
-                <Skeleton variant="rectangular" animation="wave" width={100} height={100} />
+              <Grid item xs={6} sm={3} md={3} lg={3} xl={2}>
+                <div className='artist-container' >
+                  <Skeleton variant="rectangular" animation="wave" width={56} height={56} style={{ marginBottom: 6 }}/>
+                  <Skeleton variant="text" animation="wave" width={56} height={16} variant="body"/>
                 </div>
               </Grid>
               )
@@ -168,24 +176,90 @@ export default function Dashboard({ code }) {
             }}
             count={Math.ceil(topArtists?.total / NUM_ITEMS)} 
             page={currentPage}
-            onChange={(ev, page) => {
-              console.log(page);
+            onChange={(_, page) => {
               setCurrentPage(page);
             }}
             shape="rounded" />
         </Paper>
       </Grid>
       {/* SELECTED ARTIST/SONG DETAILS */}
-      <Grid item xs={4}>
+      <Grid item item xs={11} sm={11} md={currentArtist ? 7 : 4}>
           <Paper
             sx={{
               bgcolor: 'background.paper',
               color: 'text.primary',
               borderRadius: 1,
               p: 3,
-            }}>
-              <Typography variant="overlineText" alignSelf='center'>
-                Please select an artist to continue 🙂
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
+          }}>
+              <Typography variant="overlineText" alignSelf='start'>
+                { !currentArtist ? 'Please select an artist to continue 🙂' :
+                  (
+                    <div className='current-artist-container'>
+                      <Typography variant="h5" component="div" sx={{ flexGrow: 1, alignSelf: 'start'}}>
+                        <a href={currentArtist.external_urls.spotify} target="_blank" rel="noopener">{currentArtist.name}</a>
+                      </Typography>
+                      <Avatar 
+                        alt={currentArtist.name}
+                        src={currentArtist.images[0].url}
+                        sx={{ width: '66%', height: '66%', padding: '1em 0' }}
+                        variant='square'
+                      />
+                    <div className='current-artist-stats'>
+                      <Divider textAlign="left" sx={{width:'100%', margin: '1rem 0'}}>
+                        <Chip label="Stats" />
+                      </Divider>
+                      <Typography variant="h6" component="h6">
+                        {'Followers: ' + currentArtist.followers.total}
+                      </Typography>
+                      <div className='current-artist-genres' style={{ display: 'flex', paddingTop: '.4rem'}}>
+                        <Typography variant="h6" component="h6">
+                          Genres: 
+                        </Typography>
+                        <Grid container spacing={2}>
+                          { currentArtist.genres.length > 0 ?
+                            currentArtist.genres.map(genre => 
+                              <Grid item sx={{ marginLeft: '.25rem'}}>
+                              <Chip label={genre} variant="outlined" style={{ padding: '0 0 4px 0'}} />
+                              </Grid>
+                            )
+                          : 
+                          <Grid item sx={{ marginLeft: '.25rem'}}>
+                            <Chip label={'N/A'} variant="outlined" style={{ padding: '0 0 4px 0'}} />
+                          </Grid>
+                          }
+                        </Grid>
+                      </div>
+                      <div className='current-artist-popularity' style={{ display: 'flex', paddingTop: '.4rem'}}>
+                        <Typography variant="h6" component="h6" sx={{ marginRight: '1rem'}}>
+                          Popularity:  
+                        </Typography>
+                        <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+                        <CircularProgress variant="determinate" value={currentArtist.popularity} />
+                        <Box
+                          sx={{
+                            top: 0,
+                            left: 0,
+                            bottom: 0,
+                            right: 0,
+                            position: 'absolute',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <Typography variant="caption" component="div" color="text.secondary">
+                            {`${Math.round(currentArtist.popularity)}%`}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      </div>
+                    </div>
+                    </div>
+                  )
+                }
               </Typography>
           </Paper>
         </Grid>
