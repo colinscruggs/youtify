@@ -11,6 +11,7 @@ import Avatar from '@mui/material/Avatar';
 import LinearProgress from '@mui/material/LinearProgress';
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
+import Pagination from '@mui/material/Pagination';
 import '../styles/Dashboard.css'
 
 import useAuth from '../hooks/useAuth'
@@ -26,7 +27,12 @@ export default function Dashboard({ code }) {
   const [playlists, setPlaylists] = useState();
   const [topArtists, setTopArtists] = useState();
   const [topTracks, setTopTracks] = useState();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedTimeRange, setSelectedTimeRange] = useState('short_term');
   const accessToken = useAuth(code);
+
+  const NUM_ITEMS = 20;
 
   // SET ACCESS TOKEN ON SPOTIFY API INSTANCE
   useEffect(() => {
@@ -37,7 +43,6 @@ export default function Dashboard({ code }) {
   // FETCH USER DATA
   useEffect(async () => {
     if (!accessToken) return
-
     setLoading(true);
 
     await spotifyApi.getMe().then((res) => {
@@ -46,15 +51,26 @@ export default function Dashboard({ code }) {
     await spotifyApi.getUserPlaylists().then((res) => {
       setPlaylists(res.body);
     });
-    await spotifyApi.getMyTopArtists().then((res) => {
+    await spotifyApi.getMyTopArtists({ limit: NUM_ITEMS, offset: currentPage, time_range: selectedTimeRange }).then((res) => {
       setTopArtists(res.body);
     });
     await spotifyApi.getMyTopTracks().then((res) => {
       setTopTracks(res.body);
     });
+
     setLoading(false);
-    
   }, [accessToken]);
+
+  useEffect(async () => {
+    if (!accessToken) return
+    setLoading(true);
+
+    await spotifyApi.getMyTopArtists({ limit: NUM_ITEMS, offset: (currentPage - 1) * NUM_ITEMS, time_range: selectedTimeRange }).then((res) => {
+      setTopArtists(res.body);
+    });
+
+    setLoading(false);
+  }, [currentPage])
 
   console.log(userProfile);
   console.log(topArtists);
@@ -93,6 +109,7 @@ export default function Dashboard({ code }) {
       alignItems="center"
       style={{ minHeight: 'calc(100vh - 68px)', maxWidth: '100%' }}
     >
+      {/* TOP ARTISTS/SONGS */}
       <Grid item xs={11} sm={11} md={6}>
         <Paper
           sx={{
@@ -100,14 +117,15 @@ export default function Dashboard({ code }) {
             color: 'text.primary',
             borderRadius: 1,
             p: 3,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
           }}>
 
-          <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
+          <Typography variant="h5" component="div" sx={{ flexGrow: 1, alignSelf: 'start'}}>
             Welcome, {userProfile ? userProfile.display_name : ''}
           </Typography>
-          <Divider sx={{
-            margin: '1rem 1rem 2rem 1rem'
-          }}>
+          <Divider sx={{width:'100%', margin: '1rem'}}>
             <Chip label="Top Artists" />
           </Divider>
           <Grid
@@ -132,25 +150,35 @@ export default function Dashboard({ code }) {
                 </Grid>
               );
             }) : null}
-            <Grid item>
-
-            </Grid>
           </Grid>
+          <Pagination 
+            sx={{
+              alignSelf: 'center',
+              marginTop: '1rem'
+            }}
+            count={Math.ceil(topArtists?.total / NUM_ITEMS)} 
+            page={currentPage}
+            onChange={(ev, page) => {
+              console.log(page);
+              setCurrentPage(page);
+            }}
+            shape="rounded" />
         </Paper>
       </Grid>
+      {/* SELECTED ARTIST/SONG DETAILS */}
       <Grid item xs={4}>
-        <Paper
-          sx={{
-            bgcolor: 'background.paper',
-            color: 'text.primary',
-            borderRadius: 1,
-            p: 3,
-          }}>
-            <Typography variant="overlineText" alignSelf='center'>
-              Please select an artist to continue 
-            </Typography>
-        </Paper>
-      </Grid>
+          <Paper
+            sx={{
+              bgcolor: 'background.paper',
+              color: 'text.primary',
+              borderRadius: 1,
+              p: 3,
+            }}>
+              <Typography variant="overlineText" alignSelf='center'>
+                Please select an artist to continue 
+              </Typography>
+          </Paper>
+        </Grid>
     </Grid>
     </>
   )
