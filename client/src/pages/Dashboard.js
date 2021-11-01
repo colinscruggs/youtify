@@ -53,9 +53,10 @@ export default function Dashboard({ code }) {
   console.log(userProfile);
 
   return (
+    <>
     <AppBar position="static">
       <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
           Youtify
         </Typography>
         {code && (
@@ -74,6 +75,16 @@ export default function Dashboard({ code }) {
         )}
       </Toolbar>
     </AppBar>
+    <Grid 
+      container
+      direction="column"
+      justifyContent="center"
+      alignItems="center"
+      style={{ minHeight: 'calc(100vh - 64px)', maxWidth: '100%' }}
+    >
+      <p>Hello</p>
+    </Grid>
+    </>
   )
 
 }

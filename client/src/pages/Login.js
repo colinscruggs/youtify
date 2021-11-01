@@ -16,21 +16,28 @@ const AUTH_URL = `https://accounts.spotify.com/authorize?client_id=${client_id}&
 export default function Login() {
   return (
     <Grid 
-    container
-    direction="row"
-    justifyContent="center"
-    alignItems="center"
+      container
+      direction="column"
+      justifyContent="center"
+      alignItems="center"
+      style={{ minHeight: '100vh', maxWidth: '100%' }}
     >
-      <Card sx={{ maxWidth: 400 }}>
-        <CardContent>
-          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            To access Youtify, please login to Spotify
-          </Typography>
-        </CardContent>
-        <CardActions>
-          <Button size="medium" color="success" href={AUTH_URL}>LOGIN</Button>
-        </CardActions>
-      </Card>
+      <Grid item xs={12}>
+        <Card sx={{ 
+          maxWidth: 400,
+          // bgcolor: 'background.default',
+          color: 'text.primary',
+        }}>
+          <CardContent>
+            <Typography sx={{ fontSize: 14 }}  gutterBottom>
+              To access Youtify, please login to Spotify
+            </Typography>
+          </CardContent>
+          <CardActions>
+            <Button size="medium" variant="contained" color="success" href={AUTH_URL}>LOGIN</Button>
+          </CardActions>
+        </Card>
+      </Grid>
     </Grid>
   );
 }
