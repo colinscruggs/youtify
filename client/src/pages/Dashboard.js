@@ -12,6 +12,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import Pagination from '@mui/material/Pagination';
+import Skeleton from '@mui/material/Skeleton';
 import '../styles/Dashboard.css'
 
 import useAuth from '../hooks/useAuth'
@@ -133,23 +134,32 @@ export default function Dashboard({ code }) {
             direction="row"
             alignItems="center"
             rowSpacing={2}
-            columnSpacing={2}
+            columnSpacing={4}
           >
-            { topArtists ? topArtists.items.map(artist => {
-              const name = artist.name;
-              return (
-                <Grid item xs={4} sm={3} md={4} lg={3} xl={2}
-
-                >
+            { (loading ? Array.from(new Array(NUM_ITEMS)) : topArtists?.items ?? []).map(artist => {
+              console.log(artist);
+              return  artist ? (
+                <Grid item xs={6} sm={3} md={4} lg={3} xl={2}>
                   <div className='artist-container'>
-                    <Avatar alt={name} src={artist.images[0].url} variant="rounded" />
-                    <Typography variant="overlineText" alignSelf='center'>
-                      {name}
+                    <Avatar alt={artist.name} src={artist?.images[0]?.url} variant="rounded" />
+                    <Typography variant="overlineText" sx={{
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          maxWidth: '100%'
+                    }}>
+                      {artist?.name}
                     </Typography>
                   </div>
                 </Grid>
-              );
-            }) : null}
+              ) : (
+              <Grid item xs={4} sm={3} md={4} lg={3} xl={2}>
+                <div>
+                <Skeleton variant="rectangular" animation="wave" width={100} height={100} />
+                </div>
+              </Grid>
+              )
+            })}
           </Grid>
           <Pagination 
             sx={{
@@ -175,7 +185,7 @@ export default function Dashboard({ code }) {
               p: 3,
             }}>
               <Typography variant="overlineText" alignSelf='center'>
-                Please select an artist to continue 
+                Please select an artist to continue 🙂
               </Typography>
           </Paper>
         </Grid>
