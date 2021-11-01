@@ -5,11 +5,12 @@ import Grid from '@mui/material/Grid';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import MenuItem from '@mui/material/MenuItem';
-import Menu from '@mui/material/Menu';
+import Paper from '@mui/material/Paper';
+import Avatar from '@mui/material/Avatar';
+import LinearProgress from '@mui/material/LinearProgress';
+import Chip from '@mui/material/Chip';
+import Divider from '@mui/material/Divider';
 import '../styles/Dashboard.css'
 
 import useAuth from '../hooks/useAuth'
@@ -20,6 +21,7 @@ const spotifyApi = new SpotifyWebApi({
 })
 
 export default function Dashboard({ code }) {
+  const [loading, setLoading] = useState(false);
   const [userProfile, setUserProfile] = useState();
   const [playlists, setPlaylists] = useState();
   const [topArtists, setTopArtists] = useState();
@@ -33,30 +35,35 @@ export default function Dashboard({ code }) {
   }, [accessToken]);
 
   // FETCH USER DATA
-  useEffect(() => {
+  useEffect(async () => {
     if (!accessToken) return
 
-    spotifyApi.getMe().then((res) => {
+    setLoading(true);
+
+    await spotifyApi.getMe().then((res) => {
       setUserProfile(res.body);
     });
-    spotifyApi.getUserPlaylists().then((res) => {
+    await spotifyApi.getUserPlaylists().then((res) => {
       setPlaylists(res.body);
     });
-    spotifyApi.getMyTopArtists().then((res) => {
+    await spotifyApi.getMyTopArtists().then((res) => {
       setTopArtists(res.body);
     });
-    spotifyApi.getMyTopTracks().then((res) => {
+    await spotifyApi.getMyTopTracks().then((res) => {
       setTopTracks(res.body);
     });
+    setLoading(false);
+    
   }, [accessToken]);
 
   console.log(userProfile);
+  console.log(topArtists);
 
   return (
     <>
     <AppBar position="static">
       <Toolbar>
-        <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
+        <Typography variant="h5" component="div" sx={{ flexGrow: 1, paddingLeft: '1em' }}>
           Youtify
         </Typography>
         {code && (
@@ -75,14 +82,75 @@ export default function Dashboard({ code }) {
         )}
       </Toolbar>
     </AppBar>
+    <LinearProgress 
+      variant={!loading ? 'determinate' : 'indeterminate'}
+      value={100}
+    />
     <Grid 
       container
-      direction="column"
-      justifyContent="center"
+      direction="row"
+      justifyContent="space-around"
       alignItems="center"
-      style={{ minHeight: 'calc(100vh - 64px)', maxWidth: '100%' }}
+      style={{ minHeight: 'calc(100vh - 68px)', maxWidth: '100%' }}
     >
-      <p>Hello</p>
+      <Grid item xs={11} sm={11} md={6}>
+        <Paper
+          sx={{
+            bgcolor: 'background.paper',
+            color: 'text.primary',
+            borderRadius: 1,
+            p: 3,
+          }}>
+
+          <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
+            Welcome, {userProfile ? userProfile.display_name : ''}
+          </Typography>
+          <Divider sx={{
+            margin: '1rem 1rem 2rem 1rem'
+          }}>
+            <Chip label="Top Artists" />
+          </Divider>
+          <Grid
+            container
+            direction="row"
+            alignItems="center"
+            rowSpacing={2}
+            columnSpacing={2}
+          >
+            { topArtists ? topArtists.items.map(artist => {
+              const name = artist.name;
+              return (
+                <Grid item xs={4} sm={3} md={4} lg={3} xl={2}
+
+                >
+                  <div className='artist-container'>
+                    <Avatar alt={name} src={artist.images[0].url} variant="rounded" />
+                    <Typography variant="overlineText" alignSelf='center'>
+                      {name}
+                    </Typography>
+                  </div>
+                </Grid>
+              );
+            }) : null}
+            <Grid item>
+
+            </Grid>
+          </Grid>
+        </Paper>
+      </Grid>
+      <Grid item xs={4}>
+        <Paper
+          sx={{
+            bgcolor: 'background.paper',
+            color: 'text.primary',
+            borderRadius: 1,
+            p: 3,
+          }}>
+            <Typography variant="overlineText" alignSelf='center'>
+              Please select an artist to continue 
+            </Typography>
+        </Paper>
+      </Grid>
     </Grid>
     </>
   )

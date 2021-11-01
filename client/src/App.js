@@ -32,6 +32,12 @@ function App() {
         main: '#33691E',
         dark: '#4b9a2e',
       },
+      text: {
+        primary: '#ffffff',
+        secondary: 'rgba(255,255,255,0.71)',
+        disabled: 'rgba(255,255,255,0.51)',
+        hint: 'rgba(255,255,255,0.51)',
+      },
     },
     typography: {
       fontFamily: 'Zen Kaku Gothic Antique',
