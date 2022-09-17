@@ -110,13 +110,12 @@ export default function Dashboard({ code }) {
 				direction="row"
 				justifyContent="space-around"
 				alignItems="center"
-				style={{ minHeight: 'calc(100vh - 68px)', maxWidth: '100%' }}
+				p={2}
 				rowSpacing={1}
 				columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-				pt={4}
 			>
 				{/* TOP ARTISTS */}
-				<Grid item md={6}>
+				<Grid item sm={12} md={12} lg={6} xl={6}>
 					<Paper
 						sx={{
 							bgcolor: 'background.paper',
@@ -151,7 +150,14 @@ export default function Dashboard({ code }) {
 								: topArtists?.items ?? []
 							).map((artist) => {
 								return artist ? (
-									<Grid item xs={2}>
+									<Grid
+										item
+										xs={4}
+										sm={3}
+										md={2}
+										lg={2}
+										xl={3}
+									>
 										<div
 											className="artist-container"
 											onClick={() => {
@@ -219,13 +225,13 @@ export default function Dashboard({ code }) {
 						/>
 					</Paper>
 				</Grid>
-				{/* SELECTED ARTIST/SONG DETAILS */}
-				<ArtistInfoModal
-					artist={selectedArtist}
-					open={!!selectedArtist}
-					handleClose={handleCloseSelectedArtist}
-				/>
 			</Grid>
+
+			<ArtistInfoModal
+				artist={selectedArtist}
+				open={!!selectedArtist}
+				handleClose={handleCloseSelectedArtist}
+			/>
 		</>
 	);
 }
