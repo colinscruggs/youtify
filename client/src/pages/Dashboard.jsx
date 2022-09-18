@@ -121,7 +121,7 @@ export default function Dashboard({ code }) {
 		} finally {
 			setTimeout(() => {
 				setLoadingMetrics(false);
-			}, '5000');
+			}, '3000');
 		}
 	};
 

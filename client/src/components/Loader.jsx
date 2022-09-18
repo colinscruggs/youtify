@@ -22,10 +22,9 @@ export default function Loader() {
 				y="0px"
 				viewBox="0 0 100 100"
 				enable-background="new 0 0 100 100"
-				fill="#fff"
 			>
 				<rect
-					fill="#fff"
+					fill="#83ad81"
 					width="7"
 					height="100"
 					transform="translate(0) rotate(180 3 50)"
@@ -34,13 +33,16 @@ export default function Loader() {
 						attributeName="height"
 						attributeType="XML"
 						dur="2s"
-						values="30; 100; 30"
+						calcMode="spline"
+						keySplines="0.4 0 0.2 1; 0.4 0 0.2 1"
+						values="30;100;30"
 						repeatCount="indefinite"
+						begin="0s"
 					/>
 				</rect>
 				<rect
 					x="17"
-					fill="#fff"
+					fill="#6fa16d"
 					width="7"
 					height="100"
 					transform="translate(0) rotate(180 20 50)"
@@ -49,14 +51,16 @@ export default function Loader() {
 						attributeName="height"
 						attributeType="XML"
 						dur="2s"
-						values="30; 100; 30"
+						calcMode="spline"
+						keySplines="0.4 0 0.2 1; 0.4 0 0.2 1"
+						values="30;100;30"
 						repeatCount="indefinite"
 						begin="0.1s"
 					/>
 				</rect>
 				<rect
 					x="40"
-					fill="#fff"
+					fill="#5b9559"
 					width="7"
 					height="100"
 					transform="translate(0) rotate(180 40 50)"
@@ -65,14 +69,16 @@ export default function Loader() {
 						attributeName="height"
 						attributeType="XML"
 						dur="2s"
-						values="30; 100; 30"
+						calcMode="spline"
+						keySplines="0.4 0 0.2 1; 0.4 0 0.2 1"
+						values="30;100;30"
 						repeatCount="indefinite"
 						begin="0.3s"
 					/>
 				</rect>
 				<rect
 					x="60"
-					fill="#fff"
+					fill="#468946"
 					width="7"
 					height="100"
 					transform="translate(0) rotate(180 58 50)"
@@ -81,14 +87,16 @@ export default function Loader() {
 						attributeName="height"
 						attributeType="XML"
 						dur="2s"
-						values="30; 100; 30"
+						calcMode="spline"
+						keySplines="0.4 0 0.2 1; 0.4 0 0.2 1"
+						values="30;100;30"
 						repeatCount="indefinite"
 						begin="0.5s"
 					/>
 				</rect>
 				<rect
 					x="80"
-					fill="#fff"
+					fill="#2e7d32"
 					width="7"
 					height="100"
 					transform="translate(0) rotate(180 76 50)"
@@ -97,12 +105,15 @@ export default function Loader() {
 						attributeName="height"
 						attributeType="XML"
 						dur="2s"
-						values="30; 100; 30"
+						calcMode="spline"
+						keySplines="0.4 0 0.2 1; 0.4 0 0.2 1"
+						values="30;100;30"
 						repeatCount="indefinite"
-						begin="0.1s"
+						begin="0.125s"
 					/>
 				</rect>
 			</svg>
+
 			<Typography
 				variant="h6"
 				align="center"

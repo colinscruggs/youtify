@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -10,12 +10,22 @@ import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import Loader from './Loader';
 
+import averageMetrics from '../util/averageMetrics';
+
 function UserListeningMetrics({
 	userProfile,
 	userListeningMetrics,
 	generateMetrics,
 	loading,
 }) {
+	const [metricResults, setMetricResults] = React.useState(null);
+
+	useEffect(() => {
+		if (userListeningMetrics) {
+			setMetricResults(averageMetrics(userListeningMetrics));
+		}
+	}, [userListeningMetrics]);
+
 	return (
 		<Grid item sm={12} md={12} lg={7} xl={7}>
 			<Paper
@@ -70,7 +80,7 @@ function UserListeningMetrics({
 							<Button
 								variant="contained"
 								endIcon={<AutoGraphIcon />}
-								color="error"
+								color="secondary"
 								sx={{
 									width: '50%',
 									minHeight: '5rem',
@@ -80,12 +90,16 @@ function UserListeningMetrics({
 								}}
 								onClick={generateMetrics}
 							>
-								Generate Now
+								<strong>Generate Now</strong>
 							</Button>
 						</Box>
 					</>
 				) : !!userListeningMetrics && !loading ? (
-					<div>DATA</div>
+					Object.entries(metricResults).map(([key, value]) => (
+						<Typography variant="h6" sx={{ mt: 4 }}>
+							{key}: {value}
+						</Typography>
+					))
 				) : (
 					<Loader />
 				)}
