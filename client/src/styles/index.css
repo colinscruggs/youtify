@@ -1,3 +1,14 @@
 body {
-  margin: 0;
+	margin: 0;
+}
+
+.loader > Box {
+	width: 100px;
+	height: 100px;
+	margin: 20px;
+	display: inline-block;
+}
+
+rect {
+	fill: '#fff';
 }

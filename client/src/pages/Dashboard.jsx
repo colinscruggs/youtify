@@ -2,24 +2,16 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
 import LinearProgress from '@mui/material/LinearProgress';
-import Chip from '@mui/material/Chip';
-import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
-import Pagination from '@mui/material/Pagination';
-import Skeleton from '@mui/material/Skeleton';
-import AudiotrackIcon from '@mui/icons-material/Audiotrack';
-import AutoGraphIcon from '@mui/icons-material/AutoGraph';
+
 import '../styles/Dashboard.css';
 
 import useAuth from '../hooks/useAuth';
 import SpotifyWebApi from 'spotify-web-api-node';
 import ToolBar from '../components/ToolBar';
 import ArtistInfoModal from '../components/ArtistInfoModal';
+import TopArtists from '../components/TopArtists';
+import UserListeningMetrics from '../components/UserListeningMetrics';
 
 const spotifyApi = new SpotifyWebApi({
 	clientId: '16b80bb6a6604b0392a49028ddce5b60',
@@ -27,16 +19,18 @@ const spotifyApi = new SpotifyWebApi({
 
 export default function Dashboard({ code }) {
 	const [loading, setLoading] = useState(false);
-	const [userProfile, setUserProfile] = useState();
-	const [topArtists, setTopArtists] = useState();
-	const [topTracks, setTopTracks] = useState();
+	const [loadingMetrics, setLoadingMetrics] = useState(false);
+	const [userProfile, setUserProfile] = useState(null);
+	const [topArtists, setTopArtists] = useState([]);
+	const [topTracks, setTopTracks] = useState([]);
 
 	const [currentPage, setCurrentPage] = useState(1);
 	const [selectedTimeRange, setSelectedTimeRange] = useState('short_term'); // TODO: add different time range selection
 	const [selectedArtist, setSelectedArtist] = useState(null);
+	const [userListeningMetrics, setUserListeningMetrics] = useState(null);
 	const accessToken = useAuth(code);
 
-	const NUM_ITEMS_ARTISTS = 20;
+	const NUM_ITEMS_ARTISTS = 12;
 	const NUM_ITEMS_TRACKS = 50;
 
 	// SET ACCESS TOKEN ON SPOTIFY API INSTANCE
@@ -82,7 +76,7 @@ export default function Dashboard({ code }) {
 		};
 
 		fetchUserData();
-	}, [accessToken]);
+	}, [accessToken, selectedTimeRange]);
 
 	// FETCH TOP ARTISTS BY PAGE NUMBER
 	useEffect(() => {
@@ -114,6 +108,23 @@ export default function Dashboard({ code }) {
 		setSelectedArtist(null);
 	};
 
+	const generateListeningMetrics = async () => {
+		try {
+			setLoadingMetrics(true);
+			const trackIds = topTracks.map((track) => track.id);
+			await spotifyApi.getAudioFeaturesForTracks(trackIds).then((res) => {
+				console.log(res.body.audio_features);
+				setUserListeningMetrics(res.body.audio_features);
+			});
+		} catch (e) {
+			console.error(e);
+		} finally {
+			setTimeout(() => {
+				setLoadingMetrics(false);
+			}, '5000');
+		}
+	};
+
 	return (
 		<>
 			<ToolBar userProfile={userProfile} code={!!code} />
@@ -130,176 +141,19 @@ export default function Dashboard({ code }) {
 				rowSpacing={4}
 				columnSpacing={{ xs: 6, sm: 6, md: 3 }}
 			>
-				<Grid item sm={12} md={12} lg={7} xl={7}>
-					<Paper
-						sx={{
-							bgcolor: 'background.paper',
-							color: 'text.primary',
-							borderRadius: 1,
-							p: 3,
-							display: 'flex',
-							flexDirection: 'column',
-							alignItems: 'start',
-						}}
-					>
-						<Typography
-							variant="h4"
-							component="div"
-							sx={{
-								flexGrow: 1,
-								alignSelf: 'start',
-								display: 'flex',
-								alignItems: 'center',
-							}}
-						>
-							Welcome,{' '}
-							{userProfile ? userProfile.display_name : ''}
-							<AudiotrackIcon
-								sx={{ ml: 0.8, mt: 0.8, fontSize: 35 }}
-								color="secondary"
-							/>
-						</Typography>
-						<Divider
-							sx={{ width: '100%', margin: '1rem' }}
-						></Divider>
-						<Typography variant="h5" sx={{ mt: 1, width: '100%' }}>
-							Youtify is a tool to find insight on your recent
-							listening habits.
-						</Typography>
-						<Typography variant="h6" sx={{ mt: 4 }}>
-							Generate fun metrics based on your top artists and
-							tracks and see how what your music taste says about
-							you!
-						</Typography>
-						<Box
-							sx={{
-								width: '100%',
-								display: 'flex',
-								justifyContent: 'center',
-							}}
-						>
-							<Button
-								variant="contained"
-								endIcon={<AutoGraphIcon />}
-								color="error"
-								sx={{
-									width: '50%',
-									minHeight: '5rem',
-									mt: 4,
-									borderRadius: '10rem',
-									fontSize: '1.125rem',
-								}}
-							>
-								Generate Now
-							</Button>
-						</Box>
-					</Paper>
-				</Grid>
-				{/* TOP ARTISTS */}
-				<Grid item sm={12} md={12} lg={5} xl={5}>
-					<Paper
-						sx={{
-							bgcolor: 'background.paper',
-							color: 'text.primary',
-							borderRadius: 1,
-							p: 3,
-							display: 'flex',
-							flexDirection: 'column',
-							alignItems: 'center',
-						}}
-					>
-						<Divider sx={{ width: '100%', margin: '1rem' }}>
-							<Chip label="Recent Top Artists" />
-						</Divider>
-						<Grid
-							container
-							direction="row"
-							alignItems="center"
-							rowSpacing={2}
-							columnSpacing={2}
-						>
-							{(loading
-								? Array.from(new Array(NUM_ITEMS_ARTISTS))
-								: topArtists?.items ?? []
-							).map((artist) => {
-								return artist ? (
-									<Grid
-										item
-										xs={4}
-										sm={3}
-										md={2}
-										lg={2}
-										xl={3}
-									>
-										<div
-											className="artist-container"
-											onClick={() => {
-												setSelectedArtist(artist);
-											}}
-										>
-											<Avatar
-												alt={artist.name}
-												src={artist?.images[1]?.url}
-												variant="rounded"
-												sx={{ width: 56, height: 56 }}
-											/>
-											<Typography
-												variant="overlineText"
-												sx={{
-													whiteSpace: 'nowrap',
-													overflow: 'hidden',
-													textOverflow: 'ellipsis',
-													maxWidth: '100%',
-												}}
-											>
-												{artist?.name}
-											</Typography>
-										</div>
-									</Grid>
-								) : (
-									<Grid
-										item
-										xs={6}
-										sm={3}
-										md={3}
-										lg={3}
-										xl={2}
-									>
-										<div className="artist-container">
-											<Skeleton
-												variant="rectangular"
-												animation="wave"
-												width={56}
-												height={56}
-												style={{ marginBottom: 6 }}
-											/>
-											<Skeleton
-												variant="text"
-												animation="wave"
-												width={56}
-												height={16}
-											/>
-										</div>
-									</Grid>
-								);
-							})}
-						</Grid>
-						<Pagination
-							sx={{
-								alignSelf: 'center',
-								marginTop: '1rem',
-							}}
-							count={Math.ceil(
-								topArtists?.total / NUM_ITEMS_ARTISTS
-							)}
-							page={currentPage}
-							onChange={(_, page) => {
-								setCurrentPage(page);
-							}}
-							shape="rounded"
-						/>
-					</Paper>
-				</Grid>
+				<UserListeningMetrics
+					userProfile={userProfile}
+					generateMetrics={generateListeningMetrics}
+					userListeningMetrics={userListeningMetrics}
+					loading={loadingMetrics}
+				/>
+				<TopArtists
+					topArtists={topArtists}
+					setSelectedArtist={setSelectedArtist}
+					currentPage={currentPage}
+					setCurrentPage={setCurrentPage}
+					loading={loading}
+				/>
 			</Grid>
 
 			<ArtistInfoModal
