@@ -3,6 +3,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import AppBar from '@mui/material/AppBar';
+import BarChartIcon from '@mui/icons-material/BarChart';
 
 function ToolBar({ code, userProfile }) {
 	return (
@@ -11,10 +12,20 @@ function ToolBar({ code, userProfile }) {
 				<Typography
 					variant="h5"
 					component="div"
-					sx={{ flexGrow: 1, paddingLeft: '1em' }}
+					sx={{
+						flexGrow: 1,
+						paddingLeft: '1em',
+						display: 'flex',
+						alignItems: 'end',
+					}}
 				>
 					Youtify
+					<BarChartIcon
+						sx={{ ml: 0.5, fontSize: 30 }}
+						color="secondary"
+					/>
 				</Typography>
+
 				{code && (
 					<IconButton
 						size="large"

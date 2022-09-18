@@ -19,7 +19,7 @@ function App() {
 				dark: '#358e3a',
 			},
 			secondary: {
-				main: '#FFE082',
+				main: '#8DB38B',
 			},
 			success: {
 				main: '#33691E',
@@ -30,6 +30,9 @@ function App() {
 				secondary: 'rgba(255,255,255,0.71)',
 				disabled: 'rgba(255,255,255,0.51)',
 				hint: 'rgba(255,255,255,0.51)',
+			},
+			error: {
+				main: '#EF8354',
 			},
 		},
 		typography: {
