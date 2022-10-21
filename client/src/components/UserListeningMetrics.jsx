@@ -9,7 +9,30 @@ import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
+import { styled } from '@mui/material/styles';
+import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
+
+import {
+  Chart as ChartJS,
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Radar } from 'react-chartjs-2';
+
 import Loader from './Loader';
+
+ChartJS.register(
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Tooltip,
+  Legend
+);
 
 function UserListeningMetrics({
 	userProfile,
@@ -17,41 +40,17 @@ function UserListeningMetrics({
 	generateMetrics,
 	loading,
 }) {
-	const [activeStep, setActiveStep] = useState(0);
-
-	const handleNext = () => {
-		setActiveStep((prevActiveStep) => prevActiveStep + 1);
-	};
-
-	const handleBack = () => {
-		setActiveStep((prevActiveStep) => prevActiveStep - 1);
-	};
-
-	const MetricPanels = ([key, value]) => {
-		console.log(key, value);
-		return (
-			<Grid item xs={12} sm={6} md={4} lg={3} key={key}>
-				<Paper
-					elevation={3}
-					sx={{
-						height: '100%',
-						display: 'flex',
-						flexDirection: 'column',
-						justifyContent: 'center',
-						alignItems: 'center',
-						padding: '1rem',
-					}}
-				>
-					<Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-						{value}
-					</Typography>
-					<Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-						{key}
-					</Typography>
-				</Paper>
-			</Grid>
-		);
-	};
+	const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
+		height: 15,
+		borderRadius: 8,
+		[`&.${linearProgressClasses.colorPrimary}`]: {
+			backgroundColor: 'white',
+		},
+		[`& .${linearProgressClasses.bar}`]: {
+			borderRadius: 5,
+			backgroundColor: '#8DB38B',
+		},
+	}));
 
 	console.log(userListeningMetrics);
 
@@ -66,6 +65,7 @@ function UserListeningMetrics({
 					display: 'flex',
 					flexDirection: 'column',
 					alignItems: 'start',
+					width: '100%',
 				}}
 			>
 				<AnimatePresence mode={'wait'}>
@@ -141,34 +141,73 @@ function UserListeningMetrics({
 							exit={{ opacity: 0 }}
 							key="metrics"
 						>
-							{/* {MetricPanels()} */}
-							<Grid item xs={12} sm={6} md={4} lg={3}>
-							<Paper
-								elevation={3}
-								sx={{
-									height: '100%',
-									display: 'flex',
-									flexDirection: 'column',
-									justifyContent: 'center',
-									alignItems: 'center',
-									padding: '1rem',
+							<Typography variant="h4" pb={2} sx={{ fontWeight: 'bold' }}>
+								Your Stats
+							</Typography>
+							<Divider />
+							<Typography variant="h5" pt={1} pb={2} sx={{ fontWeight: 'bold' }}>
+								Popularity Score - {userListeningMetrics.popularity} / 100
+							</Typography>
+							<BorderLinearProgress variant="determinate" value={userListeningMetrics.popularity} />
+							<Typography variant="h5" pt={2} sx={{ fontWeight: 'bold' }}>
+								Average Tempo - {userListeningMetrics.tempo} bpm (beats per minute)
+							</Typography>
+							<Typography variant="h5" pt={2} sx={{ fontWeight: 'bold' }}>
+								Audio Feature Analysis
+							</Typography>
+							<Radar
+								width={700}
+								height={700}
+								circular={true}
+								data={{
+									labels: ['General Mood', 'Intensity', 'Danceability', 'Instrumentalness', 'Acousticness'],
+									datasets: [
+										{
+											label: 'Stats from last 100 top tracks',
+											data: [
+												userListeningMetrics?.generalMood,
+												userListeningMetrics?.intensity,
+												userListeningMetrics?.danceability,
+												userListeningMetrics?.instrumentalness,
+												userListeningMetrics?.acousticness
+											],
+											backgroundColor: 'rgba(141, 179, 139, 0.2)',
+											borderColor: '#4b9a2e',
+											borderWidth: 2,
+										}
+									]
 								}}
-							>
-								{
-								Object.entries(userListeningMetrics).map(([key, value]) => {
-									return (
-										<>
-											<Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-												{value}
-											</Typography>
-											<Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-												{key}
-											</Typography>
-										</>
-									); 
-								})}
-							</Paper>
-						</Grid>
+								options={{
+									layout: {
+										padding: 20
+									},
+									plugins: {
+										legend: {
+											labels: {
+												// This more specific font property overrides the global property
+												color: 'white',
+												font: {
+													size: 12,
+													family: 'Zen Kaku Gothic Antique',
+												}
+											}
+										}
+									},
+									scales: {
+										r: {
+											pointLabels: {
+												color: 'white',
+												font: {
+													size: 14,
+													family: 'Zen Kaku Gothic Antique',
+												}
+											},
+											min: 0,
+											max: 100,
+										}
+									}
+								}}
+							/>
 						</motion.div>
 					) : (
 						// LOADER

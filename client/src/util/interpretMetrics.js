@@ -18,10 +18,10 @@ export default function interpretMetrics(metricsAverages, avgPopularity) {
 	return {
 		popularity: popularity,
 		generalMood: generalMood,
-		instrumentalness: instrumentalness,
-		acousticness: acousticness,
 		intensity: intensity,
 		danceability: danceability,
+		instrumentalness: instrumentalness,
+		acousticness: acousticness,
 		tempo: tempo,
 	};
 }
