@@ -1,17 +1,19 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
+import SpotifyWebApi from 'spotify-web-api-node';
 
 import Grid from '@mui/material/Grid';
 import LinearProgress from '@mui/material/LinearProgress';
-
-import '../styles/Dashboard.css';
-
-import useAuth from '../hooks/useAuth';
-import SpotifyWebApi from 'spotify-web-api-node';
 import ToolBar from '../components/ToolBar';
 import ArtistInfoModal from '../components/ArtistInfoModal';
 import TopArtists from '../components/TopArtists';
 import UserListeningMetrics from '../components/UserListeningMetrics';
+
+import '../styles/Dashboard.css';
+
+import useAuth from '../hooks/useAuth';
+import averageMetrics from '../util/averageMetrics';
+import interpretMetrics from '../util/interpretMetrics';
 
 const spotifyApi = new SpotifyWebApi({
 	clientId: '16b80bb6a6604b0392a49028ddce5b60',
@@ -110,18 +112,32 @@ export default function Dashboard({ code }) {
 
 	const generateListeningMetrics = async () => {
 		try {
+			setLoading(true);
 			setLoadingMetrics(true);
 			const trackIds = topTracks.map((track) => track.id);
+			const avgPopularity =
+				topTracks
+					.map((track) => track.popularity)
+					.reduce((a, b) => a + b) / topTracks.length;
+			console.log(avgPopularity);
 			await spotifyApi.getAudioFeaturesForTracks(trackIds).then((res) => {
 				console.log(res.body.audio_features);
-				setUserListeningMetrics(res.body.audio_features);
+				const averages = averageMetrics(res.body.audio_features);
+				const interpretMetricsResults = interpretMetrics(
+					averages,
+					avgPopularity
+				);
+				setUserListeningMetrics(interpretMetricsResults);
 			});
 		} catch (e) {
 			console.error(e);
 		} finally {
+			const loadTime = Math.floor(Math.random() * 1000) + 750;
+			console.log(loadTime);
 			setTimeout(() => {
 				setLoadingMetrics(false);
-			}, '3000');
+				setLoading(false);
+			}, `${1000 + loadTime}`);
 		}
 	};
 

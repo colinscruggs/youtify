@@ -1,19 +1,8 @@
-import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
 export default function Loader() {
 	return (
-		<Box
-			sx={{
-				display: 'flex',
-				flexDirection: 'column',
-				justifyContent: 'center',
-				alignItems: 'center',
-				width: '100%',
-				height: '100%',
-			}}
-			class="loader"
-		>
+		<>
 			<svg
 				version="1.1"
 				id="Layer_1"
@@ -121,6 +110,6 @@ export default function Loader() {
 			>
 				Calculating your results...
 			</Typography>
-		</Box>
+		</>
 	);
 }
