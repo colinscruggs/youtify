@@ -141,7 +141,34 @@ function UserListeningMetrics({
 							exit={{ opacity: 0 }}
 							key="metrics"
 						>
-							{MetricPanels()}
+							{/* {MetricPanels()} */}
+							<Grid item xs={12} sm={6} md={4} lg={3}>
+							<Paper
+								elevation={3}
+								sx={{
+									height: '100%',
+									display: 'flex',
+									flexDirection: 'column',
+									justifyContent: 'center',
+									alignItems: 'center',
+									padding: '1rem',
+								}}
+							>
+								{
+								Object.entries(userListeningMetrics).map(([key, value]) => {
+									return (
+										<>
+											<Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+												{value}
+											</Typography>
+											<Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+												{key}
+											</Typography>
+										</>
+									); 
+								})}
+							</Paper>
+						</Grid>
 						</motion.div>
 					) : (
 						// LOADER

@@ -7,7 +7,21 @@ export default function interpretMetrics(metricsAverages, avgPopularity) {
 	// Do you like words in your music?
 	const instrumentalness = metricsAverages.instrumentalness;
 	const acousticness = metricsAverages.acousticness;
+	// How intense is your music?
+	const intensity = metricsAverages.energy
+	// How danceable is your music?
+	const danceability = metricsAverages.danceability;
+	// How fast do you like your music?
+	const tempo = metricsAverages.tempo;
 
-	console.log(metricsAverages);
-	console.log(avgPopularity);
+
+	return {
+		popularity: popularity,
+		generalMood: generalMood,
+		instrumentalness: instrumentalness,
+		acousticness: acousticness,
+		intensity: intensity,
+		danceability: danceability,
+		tempo: tempo,
+	};
 }

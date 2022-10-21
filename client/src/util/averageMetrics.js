@@ -5,6 +5,7 @@ export default function averageMetrics(metrics) {
 		speechiness: 0,
 		acousticness: 0,
 		instrumentalness: 0,
+		loudness: 0,
 		liveness: 0,
 		valence: 0,
 		tempo: 0,

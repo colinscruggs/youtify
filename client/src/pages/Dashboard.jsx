@@ -127,6 +127,7 @@ export default function Dashboard({ code }) {
 					averages,
 					avgPopularity
 				);
+				console.log(interpretMetricsResults);
 				setUserListeningMetrics(interpretMetricsResults);
 			});
 		} catch (e) {
